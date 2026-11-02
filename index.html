@@ -130,10 +130,19 @@ const now = new Date();
 let ui = { tab: 'poche', y: now.getFullYear(), m: now.getMonth() + 1, editId: null, notice: null };
 let db = load();
 
+// Une seule fois : ramène une ancienne liste de charges à logement, abonnements et assurance, en gardant leurs montants.
+function migrateBudget(d) {
+  if (d.budget && !d.settings.budgetClean) {
+    const find = re => d.budget.find(x => re.test(x.label.toLowerCase()))?.amount || 0;
+    d.budget = [['Logement', /logement|loyer/], ['Abonnements', /abonnement/], ['Assurance', /assurance/]].map(([label, re]) => ({ label, amount: find(re) }));
+  }
+  d.settings.budgetClean = true;
+  return d;
+}
 function load() {
   try {
     const d = JSON.parse(localStorage.getItem(KEY));
-    if (d && Array.isArray(d.encs)) return { ...d, settings: { ...DEFAULTS, ...d.settings } };
+    if (d && Array.isArray(d.encs)) return migrateBudget({ ...d, settings: { ...DEFAULTS, ...d.settings } });
   } catch (e) {}
   return { encs: [], settings: { ...DEFAULTS } };
 }
@@ -279,28 +288,31 @@ function viewFiscal() {
   return h;
 }
 
-const BUDGET_START = ['Loyer', 'Nourriture', 'Abonnements', 'Transports', 'Assurances', 'Loisirs'];
+const BUDGET_START = ['Logement', 'Abonnements', 'Assurance'];
 const budgetTotal = () => (db.budget || []).reduce((a, x) => a + x.amount, 0);
 const reservedFor = (t, rate) => Math.max(0, Math.round(t.ht * rate / 100));
 function readBudgetForm() {
   return [...document.querySelectorAll('#budget .budget-row')].map(r => ({ label: r.querySelector('[name=label]').value, amount: r.querySelector('[name=amount]').value }));
 }
+const extrasOf = prefix => (db.extras || []).filter(x => x.month.startsWith(prefix));
+const sumAmount = list => list.reduce((a, x) => a + x.amount, 0);
 function viewBudget() {
   const { y, m } = ui, rate = taxFor(y).rate, charges = budgetTotal(), mt = total(inMonth(y, m)), yt = total(inYear(y));
   const span = monthSpan(y), months = span.count, enough = span.filled >= MIN_MONTHS;
-  const monthTax = reservedFor(mt, rate), left = mt.poche - monthTax - charges;
-  const avgFree = months ? (yt.poche - reservedFor(yt, rate)) / months : 0, avgLeft = avgFree - charges;
+  const monthTax = reservedFor(mt, rate), monthKey = `${y}-${pad(m)}`, extras = extrasOf(monthKey), extrasTotal = sumAmount(extras), left = mt.poche - monthTax - charges - extrasTotal;
+  const avgFree = months ? (yt.poche - reservedFor(yt, rate)) / months : 0, varMonths = new Set(extrasOf(String(y)).map(x => x.month)).size, avgExtras = varMonths ? sumAmount(extrasOf(String(y))) / varMonths : 0, avgLeft = avgFree - charges - avgExtras;
   const verdict = c => c >= 0 ? eur(c) : `− ${eur(-c)}`;
-  let h = notice() + `<section class="card month-card"><div class="nav"><button data-act="prev" aria-label="Mois précédent">‹</button><strong>${cap(MONTHS[m - 1])} ${y}</strong><button data-act="next" aria-label="Mois suivant">›</button></div><div class="label">${!mt.ttc ? 'Aucun encaissement saisi ce mois-ci' : left >= 0 ? 'Je peux mettre de côté ce mois-ci' : 'Il me manque ce mois-ci'}</div><div class="big">${mt.ttc ? eur(Math.abs(left)) : '–'}</div><div class="lines"><div><span>Dans ma poche</span><span>${eur(mt.poche)}</span></div><div><span>À garder pour les impôts</span><span>− ${eur(monthTax)}</span></div><div><span>Mes charges</span><span>− ${eur(charges)}</span></div></div>${charges ? '' : '<p class="muted" style="margin:10px 0 0">Tes charges ne sont pas encore renseignées : ce montant est surestimé.</p>'}</section>`;
+  let h = notice() + `<section class="card month-card"><div class="nav"><button data-act="prev" aria-label="Mois précédent">‹</button><strong>${cap(MONTHS[m - 1])} ${y}</strong><button data-act="next" aria-label="Mois suivant">›</button></div><div class="label">${!mt.ttc ? 'Aucun encaissement saisi ce mois-ci' : left >= 0 ? 'Je peux mettre de côté ce mois-ci' : 'Il me manque ce mois-ci'}</div><div class="big">${mt.ttc ? eur(Math.abs(left)) : '–'}</div><div class="lines"><div><span>Dans ma poche</span><span>${eur(mt.poche)}</span></div><div><span>À garder pour les impôts</span><span>− ${eur(monthTax)}</span></div><div><span>Charges fixes</span><span>− ${eur(charges)}</span></div>${extrasTotal ? `<div><span>Dépenses variables</span><span>− ${eur(extrasTotal)}</span></div>` : ''}</div>${mt.ttc && !extrasTotal ? '<p class="muted" style="margin:10px 0 0">Aucune dépense variable saisie ce mois-ci : ce montant baissera quand tu les ajouteras.</p>' : ''}${charges ? '' : '<p class="muted" style="margin:10px 0 0">Tes charges fixes ne sont pas encore renseignées : ce montant est surestimé.</p>'}</section>`;
+  h += `<section class="card"><h2>Dépenses variables de ${MONTHS[m - 1]} ${y}</h2><p class="muted" style="margin:0 0 10px">Tout ce qui n'est pas une charge fixe, en un seul montant.</p><form id="extra" class="row"><input name="amount" style="flex:1;min-width:120px" aria-label="Dépenses variables du mois" inputmode="decimal" placeholder="0,00" value="${extrasTotal ? (extrasTotal / 100).toFixed(2).replace('.', ',') : ''}"><button>Enregistrer</button></form></section>`;
   const dots = Array.from({ length: MIN_MONTHS }, (_, i) => `<i class="${i < span.filled ? 'on' : ''}"></i>`).join('');
   h += `<h2 class="year-title">En moyenne en ${y}</h2><section class="card">` + (enough
-    ? `<div class="label">Je peux mettre de côté par mois</div><div class="mid">${verdict(Math.round(avgLeft))}</div><p class="muted" style="margin:8px 0 0">Calculé sur ${months} mois, ${/^[ao]/.test(MONTHS[span.first - 1]) ? "d'" : 'de '}${MONTHS[span.first - 1]} à ${MONTHS[span.last - 1]}, mois sans revenu compris : ${eur(Math.round(avgFree))} disponibles par mois après impôts, moins ${eur(charges)} de charges.</p>`
+    ? `<div class="label">Je peux mettre de côté par mois</div><div class="mid">${verdict(Math.round(avgLeft))}</div><p class="muted" style="margin:8px 0 0">Calculé sur ${months} mois, ${/^[ao]/.test(MONTHS[span.first - 1]) ? "d'" : 'de '}${MONTHS[span.first - 1]} à ${MONTHS[span.last - 1]}, mois sans revenu compris : ${eur(Math.round(avgFree))} disponibles par mois après impôts, moins ${eur(charges)} de charges fixes${avgExtras ? ` et ${eur(Math.round(avgExtras))} de dépenses variables (moyenne sur ${varMonths} mois renseigné${varMonths > 1 ? 's' : ''})` : ', sans dépense variable saisie'}.</p>`
     : `<div class="label">Pas encore assez de données</div><div class="dots" aria-hidden="true">${dots}</div><p class="muted" style="margin:8px 0 0">${span.filled} mois saisi${span.filled > 1 ? 's' : ''} sur ${MIN_MONTHS}. La moyenne s'affichera à partir de ${MIN_MONTHS} mois. <button class="link" data-act="tab" data-v="saisie">Ajouter un encaissement</button></p>`) + `</section>`;
   const edit = ui.budgetDraft;
   if (edit) {
-    h += `<section class="card"><h2>Mes charges par mois</h2><form id="budget">${edit.map((x, i) => `<div class="budget-row"><input name="label" aria-label="Nom de la charge" placeholder="Nom" value="${esc(x.label)}"><input name="amount" aria-label="Montant par mois" inputmode="decimal" placeholder="0,00" value="${esc(x.amount)}"><button type="button" class="link" data-act="budgetDel" data-v="${i}">Retirer</button></div>`).join('')}<div class="row" style="margin-top:12px"><button type="button" data-act="budgetAdd">+ Ajouter une ligne</button><button class="primary">Enregistrer</button>${db.budget ? '<button type="button" data-act="budgetCancel">Annuler</button>' : ''}</div></form></section>`;
+    h += `<section class="card"><h2>Mes charges fixes par mois</h2><p class="muted" style="margin:0 0 10px">Ce qui revient chaque mois au même montant. Ce qui bouge va dans les dépenses variables.</p><form id="budget">${edit.map((x, i) => `<div class="budget-row"><input name="label" aria-label="Nom de la charge" placeholder="Nom" value="${esc(x.label)}"><input name="amount" aria-label="Montant par mois" inputmode="decimal" placeholder="0,00" value="${esc(x.amount)}"><button type="button" class="link" data-act="budgetDel" data-v="${i}">Retirer</button></div>`).join('')}<div class="row" style="margin-top:12px"><button type="button" data-act="budgetAdd">+ Ajouter une ligne</button><button class="primary">Enregistrer</button>${db.budget ? '<button type="button" data-act="budgetCancel">Annuler</button>' : ''}</div></form></section>`;
   } else {
-    h += `<section class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">Mes charges par mois</h2><button data-act="budgetEdit">Modifier</button></div>${db.budget?.length ? `<div class="saved">${db.budget.map(x => `<div><span>${esc(x.label)}</span><b>${eur(x.amount)}</b></div>`).join('')}<div><span>Total</span><b>${eur(charges)}</b></div></div>` : '<p class="muted" style="margin:0">Aucune charge pour l\'instant.</p>'}</section>`;
+    h += `<section class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">Mes charges fixes par mois</h2><button data-act="budgetEdit">Modifier</button></div>${db.budget?.length ? `<div class="saved">${db.budget.map(x => `<div><span>${esc(x.label)}</span><b>${eur(x.amount)}</b></div>`).join('')}<div><span>Total</span><b>${eur(charges)}</b></div></div>` : '<p class="muted" style="margin:0">Aucune charge fixe pour l\'instant.</p>'}</section>`;
   }
   return h;
 }
@@ -359,7 +371,7 @@ document.addEventListener('change', ev => {
     try {
       const d = JSON.parse(txt);
       if (!Array.isArray(d.encs)) throw 0;
-      if (confirm(`Remplacer tes données par cette sauvegarde (${d.encs.length} encaissements) ?`)) { db = { ...d, settings: { ...DEFAULTS, ...d.settings } }; save(); ui.notice = { kind: 'good', text: 'Sauvegarde restaurée.' }; }
+      if (confirm(`Remplacer tes données par cette sauvegarde (${d.encs.length} encaissements) ?`)) { db = migrateBudget({ ...d, settings: { ...DEFAULTS, ...d.settings } }); save(); ui.notice = { kind: 'good', text: 'Sauvegarde restaurée.' }; }
     } catch (e) { ui.notice = { kind: 'bad', text: "Ce fichier n'est pas une sauvegarde valide." }; }
     render();
   });
@@ -383,6 +395,10 @@ document.addEventListener('submit', ev => {
     const r = { urssafRate: pct(v.urssafRate), abattement: pct(v.abattement), tvaRate: v.tvaOn ? pct(v.tvaRate) : db.settings.tvaRate, decoteSeul: parseNum(v.decoteSeul), decoteCouple: parseNum(v.decoteCouple) };
     if (Object.values(r).includes(null) || r.decoteSeul < 0 || r.decoteCouple < 0 || !asc) ui.notice = { kind: 'bad', text: 'Un paramètre est invalide. Vérifie les taux et que les tranches du barème vont en augmentant.' };
     else { Object.assign(db.settings, r, { bareme, activite: v.activite, vl: !!v.vl, tvaOn: !!v.tvaOn, configured: true }); save(); ui.notice = { kind: 'good', text: 'Paramètres enregistrés.' }; }
+  } else if (f.id === 'extra') {
+    const key = `${ui.y}-${pad(ui.m)}`, raw = String(v.amount).trim(), a = raw ? parseMoney(raw) : 0;
+    if (a === null || a < 0) ui.notice = { kind: 'bad', text: 'Indique un montant positif, ou laisse vide.' };
+    else { db.extras = (db.extras || []).filter(x => x.month !== key); if (a) db.extras.push({ month: key, amount: a }); save(); ui.notice = { kind: 'good', text: 'Dépenses du mois enregistrées.' }; }
   } else if (f.id === 'budget') {
     const rows = readBudgetForm().filter(x => x.label.trim() || String(x.amount).trim());
     const clean = rows.map(x => ({ label: x.label.trim(), amount: String(x.amount).trim() ? parseMoney(x.amount) : 0 }));
