@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ma poche</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f4f4f7; --surface: #fff; --surface-2: #eeeef2; --line: #e8e8ed;
+  --text: #0a0a0f; --text-2: #5f5f6b; --accent: #0a0a0f; --accent-ink: #fff; --brand: #4f55f1;
+  --reserve-bg: #fdf1d8; --reserve-ink: #6e4700; --good-bg: #e4f6ec; --good-ink: #14613a; --bad-bg: #fde8e6; --bad-ink: #a3241f;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 16px 20px 64px; }
+header { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 20px; }
+#gear { width: 40px; height: 40px; padding: 0; flex: none; display: grid; place-items: center; color: var(--text-2); }
+#gear[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
+.tabs { min-width: 0; overflow-x: auto; scrollbar-width: none; display: inline-flex; background: var(--surface-2); border-radius: 99px; padding: 4px; }
+.tabs button { flex: none; background: none; color: var(--text-2); padding: 7px 22px; }
+.tabs button[aria-current="page"] { background: var(--surface); color: var(--text); }
+button { font: inherit; font-weight: 600; border: 0; background: var(--surface-2); color: var(--text); border-radius: 99px; padding: 9px 16px; cursor: pointer; }
+button.primary { background: var(--accent); color: var(--accent-ink); }
+button.link { background: none; padding: 2px 4px; color: var(--text-2); text-decoration: underline; font-size: 13.5px; font-weight: 500; }
+button:focus-visible, input:focus-visible, summary:focus-visible, tr:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.btn { font-weight: 600; background: var(--surface-2); border-radius: 99px; padding: 9px 16px; cursor: pointer; display: inline-block; }
+.card { background: var(--surface); border-radius: 22px; padding: 22px; margin-bottom: 14px; }
+.nav { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; }
+.nav button { width: 38px; height: 38px; padding: 0; background: var(--surface); font-size: 18px; }
+.nav strong { min-width: 170px; text-align: center; font-size: 17px; }
+.label { color: var(--text-2); }
+.big { font-size: 52px; font-weight: 720; letter-spacing: -.03em; line-height: 1.12; font-variant-numeric: tabular-nums; }
+.mid { font-size: 32px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.reserve { background: var(--reserve-bg); color: var(--reserve-ink); border-radius: 14px; padding: 11px 14px; margin-top: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.reserve b { font-variant-numeric: tabular-nums; }
+.lines { margin-top: 14px; font-size: 14px; color: var(--text-2); }
+.lines div { display: flex; justify-content: space-between; padding: 3px 0; font-variant-numeric: tabular-nums; }
+.muted { color: var(--text-2); font-size: 13.5px; }
+h2 { font-size: 16px; margin: 0 0 8px; letter-spacing: -.01em; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { color: var(--text-2); font-weight: 500; }
+.n { text-align: right; font-variant-numeric: tabular-nums; }
+tfoot td { font-weight: 680; border-bottom: 0; }
+tbody tr[data-act] { cursor: pointer; }
+tbody tr[data-act]:hover { background: var(--bg); }
+tr.sel { background: #eceefe; }
+.strong { font-weight: 680; }
+form.entry { display: grid; grid-template-columns: 160px 1fr 1.4fr auto; gap: 10px; align-items: end; }
+label.f { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; color: var(--text-2); }
+select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid transparent; border-radius: 12px; padding: 10px 12px; width: 100%; min-width: 0; }
+input { font: inherit; color: var(--text); background: var(--bg); border: 1px solid transparent; border-radius: 12px; padding: 10px 12px; width: 100%; min-width: 0; }
+.settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; align-items: end; }
+#fiscal { align-items: start; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.saved div { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-top: 1px solid var(--line); }
+.saved div:first-child { border-top: 0; }
+.saved span { color: var(--text-2); }
+.saved b { font-weight: 620; font-variant-numeric: tabular-nums; text-align: right; }
+.month-card { background: #15151f; color: #fff; }
+.month-card .nav { justify-content: space-between; margin-bottom: 18px; }
+.month-card .nav button { background: rgba(255,255,255,.14); color: #fff; }
+.month-card .label, .month-card .lines, .month-card .muted, .month-card button.link { color: #c9c9d6; }
+.month-card .reserve { background: #f6c453; color: #2c1f00; }
+.year-title { margin: 24px 0 10px; font-size: 18px; }
+.budget-row { display: grid; grid-template-columns: 1fr 130px auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+.dots { display: flex; gap: 6px; margin-top: 10px; }
+.dots i { width: 28px; height: 6px; border-radius: 3px; background: var(--surface-2); }
+.dots i.on { background: var(--brand); }
+.full { grid-column: 1 / -1; }
+label.c { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
+input[type=checkbox] { width: auto; margin-top: 3px; }
+.head-simple h1 { font-size: 22px; margin: 0 0 14px; }
+.tax-row { display: grid; grid-template-columns: 1fr 120px 80px 16px; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 14px; color: var(--text-2); }
+[hidden] { display: none !important; }
+.short { display: none; }
+.banner { border-radius: 14px; padding: 11px 14px; margin-bottom: 14px; }
+.good { background: var(--good-bg); color: var(--good-ink); }
+.bad { background: var(--bad-bg); color: var(--bad-ink); }
+.month { display: flex; justify-content: space-between; gap: 10px; font-weight: 650; padding: 16px 0 6px; flex-wrap: wrap; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.entry-line { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.entry-line .amt { font-weight: 620; font-variant-numeric: tabular-nums; white-space: nowrap; }
+details summary { cursor: pointer; font-weight: 600; }
+details[open] summary { margin-bottom: 14px; }
+@media (max-width: 640px) {
+  .wrap { padding: 12px 16px 56px; }
+  .card { padding: 18px; }
+  .big { font-size: 42px; }
+  form.entry { grid-template-columns: 1fr 1fr; }
+  form.entry .wide { grid-column: 1 / -1; }
+  th.opt, td.opt { display: none; }
+  .long { display: none; }
+  .short { display: inline; }
+  .tabs button { padding: 7px 10px; font-size: 13px; white-space: nowrap; }
+  .tax-row { grid-template-columns: 1fr 88px 58px 14px; }
+  .budget-row { grid-template-columns: 1fr 96px auto; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><div class="tabs" id="tabs"></div><button id="gear" data-act="tab" data-v="params" aria-label="Paramètres" title="Paramètres"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></header>
+  <main id="main"></main>
+</div>
+<script>
+const KEY = 'suivi-facturation-v1';
+// Barème 2026 pour une part (service-public) et taux 2026 (urssaf.fr). Tout est modifiable dans les paramètres.
+const BAREME_2026 = [[11600, 0], [29579, 11], [84577, 30], [181917, 41], [null, 45]];
+const ACTIVITES = {
+  bnc: { label: 'Profession libérale non réglementée (BNC)', urssaf: 25.8, vl: 2.2, abattement: 34 },
+  cipav: { label: 'Profession libérale réglementée, Cipav (BNC)', urssaf: 23.4, vl: 2.2, abattement: 34 },
+  services: { label: 'Prestation de services commerciale (BIC)', urssaf: 21.3, vl: 1.7, abattement: 50 },
+  artisan: { label: 'Prestation de services artisanale (BIC)', urssaf: 21.5, vl: 1.7, abattement: 50 },
+  vente: { label: 'Vente de marchandises (BIC)', urssaf: 12.4, vl: 1, abattement: 71 },
+};
+const DEFAULTS = { configured: false, activite: 'bnc', tvaOn: true, tvaRate: 20, urssafRate: 25.8, vl: false, abattement: 34, bareme: BAREME_2026, decoteSeul: 897, decoteCouple: 1483, parts: 1, autresRevenus: 0, impotPerso: null };
+const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const now = new Date();
+let ui = { tab: 'poche', y: now.getFullYear(), m: now.getMonth() + 1, editId: null, notice: null };
+let db = load();
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY));
+    if (d && Array.isArray(d.encs)) return { ...d, settings: { ...DEFAULTS, ...d.settings } };
+  } catch (e) {}
+  return { encs: [], settings: { ...DEFAULTS } };
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(db)); }
+  catch (e) { ui.notice = { kind: 'bad', text: "Le navigateur a refusé d'enregistrer. Télécharge une sauvegarde tout de suite." }; }
+}
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const eur = c => (c / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+const pad = n => String(n).padStart(2, '0');
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const pctTxt = n => n.toFixed(1).replace('.', ',') + ' %';
+const today = () => `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+function parseMoney(v) {
+  let s = String(v ?? '').replace(/[\s  €]/g, '');
+  const neg = s.startsWith('-'); s = s.replace(/^[-+]/, '');
+  const i = Math.max(s.lastIndexOf(','), s.lastIndexOf('.'));
+  if (i >= 0 && s.length - i - 1 <= 2) s = s.slice(0, i).replace(/[.,]/g, '') + '.' + s.slice(i + 1);
+  else s = s.replace(/[.,]/g, '');
+  if (!/^\d+(\.\d*)?$|^\.\d+$/.test(s)) return null;
+  const c = Math.round(parseFloat(s) * 100);
+  return neg ? -c : c;
+}
+const parseNum = v => { const n = parseFloat(String(v).replace(/\s/g, '').replace(',', '.')); return isFinite(n) ? n : null; };
+
+// Chaque saisie garde ses taux : les changer plus tard ne réécrit pas le passé.
+function calc(e) {
+  const r = e.rates || { tva: db.settings.tvaRate, urssaf: db.settings.urssafRate };
+  const tva = Math.round(e.ttc * r.tva / (100 + r.tva)), ht = e.ttc - tva, urssaf = Math.round(ht * r.urssaf / 100);
+  return { ttc: e.ttc, ht, tva, urssaf, poche: e.ttc - tva - urssaf };
+}
+function total(list) { const t = { ttc: 0, ht: 0, tva: 0, urssaf: 0, poche: 0 }; for (const e of list) { const c = calc(e); for (const k in t) t[k] += c[k]; } return t; }
+const inMonth = (y, m) => db.encs.filter(e => e.date.startsWith(`${y}-${pad(m)}`));
+const inYear = y => db.encs.filter(e => e.date.startsWith(String(y)));
+
+function incomeTax(rev, parts, couple) {
+  const q = rev / parts; let tax = 0, low = 0;
+  const st = db.settings;
+  for (const [top, r] of st.bareme) { const t = top === null ? Infinity : top; if (q > low) tax += (Math.min(q, t) - low) * r / 100; low = t; }
+  tax *= parts;
+  return Math.max(0, tax - Math.max(0, (couple ? st.decoteCouple : st.decoteSeul) - tax * .4525));
+}
+// Une fiche par année. Sans fiche enregistrée, on repart de l'année précédente (sans ses acomptes), sinon des valeurs par défaut.
+const MIN_MONTHS = 3;
+// Du premier au dernier mois saisi. Un mois vide entre les deux (vacances) compte, ceux d'avant ou d'après non.
+function monthSpan(y) {
+  const ms = inYear(y).map(e => +e.date.slice(5, 7));
+  if (!ms.length) return { first: 0, last: 0, count: 0, filled: 0 };
+  const first = Math.min(...ms), last = Math.max(...ms);
+  return { first, last, count: last - first + 1, filled: new Set(ms).size };
+}
+function fiscal(y) {
+  const all = db.fiscal || {}, s = db.settings;
+  if (all[y]) return all[y];
+  const prev = Object.keys(all).filter(k => +k < y).sort().pop();
+  if (prev) return { ...all[prev], acomptes: 0, saved: false };
+  return { couple: s.parts >= 2, parts: s.parts, autres: s.autresRevenus, deductions: 0, reductions: 0, acomptes: 0, taux: s.impotPerso, saved: false };
+}
+// Année en cours : CA projeté à partir du dernier mois saisi. Micro-BNC : 34 % d'abattement, 305 € minimum.
+function taxFor(y) {
+  const f = fiscal(y), ht = total(inYear(y)).ht / 100;
+  const span = monthSpan(y), lastMonth = span.last;
+  const projected = y === now.getFullYear() && lastMonth > 0 && lastMonth < 12;
+  // Les mois restants suivent la moyenne depuis le premier mois saisi. Les mois d'avant ne sont pas supposés à zéro dans la moyenne.
+  const ca = Math.max(0, projected ? ht + ht / span.count * (12 - lastMonth) : ht), imposable = Math.max(0, ca - Math.max(ca * db.settings.abattement / 100, 305));
+  const net = rev => Math.max(0, incomeTax(Math.max(0, rev - f.deductions), f.parts, f.couple) - f.reductions);
+  const foyer = net(f.autres + imposable), activite = foyer - net(f.autres), reste = Math.max(0, activite - f.acomptes);
+  const vl = db.settings.vl;
+  return { ca, imposable, foyer, activite, reste: vl ? 0 : reste, acomptes: f.acomptes, rate: vl ? 0 : f.taux !== null ? f.taux : ca > 0 ? reste / ca * 100 : 0, projected, perso: !vl && f.taux !== null, saved: f.saved, vl };
+}
+
+function render() {
+  $('#tabs').innerHTML = [['poche', 'Ma poche'], ['saisie', 'Saisie'], ['fiscal', '<span class="long">Situation fiscale</span><span class="short">Fiscal</span>'], ['budget', 'Budget']].map(([k, v]) => `<button data-act="tab" data-v="${k}" ${ui.tab === k ? 'aria-current="page"' : ''}>${v}</button>`).join('');
+  if (ui.tab === 'params') $('#gear').setAttribute('aria-current', 'page'); else $('#gear').removeAttribute('aria-current');
+  $('#main').innerHTML = { poche: viewPoche, saisie: viewSaisie, fiscal: viewFiscal, budget: viewBudget, params: viewParams }[ui.tab]();
+}
+function notice() { if (!ui.notice) return ''; const n = ui.notice; ui.notice = null; return `<div class="banner ${n.kind}" role="status">${esc(n.text)}</div>`; }
+function lines(t) { return `<div class="lines"><div><span>Encaissé TTC</span><span>${eur(t.ttc)}</span></div>${t.tva ? `<div><span>TVA</span><span>− ${eur(t.tva)}</span></div>` : ''}<div><span>${db.settings.vl ? 'URSSAF et impôt' : 'URSSAF'}</span><span>− ${eur(t.urssaf)}</span></div></div>`; }
+function reserve(t, rate) { if (db.settings.vl) return ''; const r = Math.max(0, Math.round(t.ht * rate / 100)); return `<div class="reserve"><span>Dont à garder pour les impôts</span><b>${eur(r)}</b></div>`; }
+
+function viewPoche() {
+  const { y, m } = ui, tax = taxFor(y), mt = total(inMonth(y, m)), yt = total(inYear(y));
+  let h = notice();
+  if (!db.settings.configured) h += `<div class="banner" style="background:#eceefe;color:#2c2f9e">Calcul par défaut : libéral BNC, TVA 20 %, URSSAF 25,8 %. <button class="link" style="color:inherit" data-act="tab" data-v="params">Adapter à ma situation</button></div>`;
+  h += `<section class="card month-card"><div class="nav"><button data-act="prev" aria-label="Mois précédent">‹</button><strong>${cap(MONTHS[m - 1])} ${y}</strong><button data-act="next" aria-label="Mois suivant">›</button></div><div class="label">Dans ma poche ce mois-ci</div><div class="big">${eur(mt.poche)}</div>${mt.ttc ? reserve(mt, tax.rate) + lines(mt) : `<p class="muted" style="margin:10px 0 0">Rien de saisi pour ce mois. <button class="link" data-act="tab" data-v="saisie">Ajouter un encaissement</button></p>`}</section>`;
+  h += `<h2 class="year-title">Toute l'année ${y}</h2><section class="card"><div class="label">Dans ma poche en ${y}</div><div class="mid">${eur(yt.poche)}</div>${yt.ttc ? reserve(yt, tax.rate) + lines(yt) : ''}${yt.ttc ? `<p class="muted" style="margin:10px 0 0">${tax.vl ? 'Versement libératoire : ton impôt est déjà compté dans les cotisations.' : tax.perso ? `Taux impôt choisi : ${pctTxt(tax.rate)}.` : `Taux impôt estimé : ${pctTxt(tax.rate)}, ${tax.projected ? `pour environ ${eur(Math.round(tax.ca) * 100)} HT sur l'année à ce rythme` : `pour ${eur(Math.round(tax.ca) * 100)} HT`}. C'est une estimation.`}${monthSpan(y).filled < MIN_MONTHS && !tax.perso ? ` Encore peu fiable avec ${monthSpan(y).filled} mois saisi${monthSpan(y).filled > 1 ? 's' : ''}.` : ''}${tax.saved ? '' : ` <button class="link" data-act="tab" data-v="fiscal">Compléter ma situation fiscale</button>`}</p>` : ''}</section>`;
+  const rows = MONTHS.map((n, i) => ({ i: i + 1, n, ...total(inMonth(y, i + 1)) })).filter(r => r.ttc);
+  if (rows.length) h += `<section class="card"><h2>Mois par mois</h2><div class="scroll"><table><thead><tr><th>${y}</th><th class="n opt">Encaissé</th>${yt.tva ? '<th class="n opt">TVA</th>' : ''}<th class="n opt">URSSAF</th><th class="n strong">Ma poche</th><th class="n">Impôts</th></tr></thead><tbody>${rows.map(r => `<tr class="${r.i === m ? 'sel' : ''}" data-act="pick" data-v="${r.i}" tabindex="0"><td>${cap(r.n)}</td><td class="n opt">${eur(r.ttc)}</td>${yt.tva ? `<td class="n opt">${eur(r.tva)}</td>` : ''}<td class="n opt">${eur(r.urssaf)}</td><td class="n strong">${eur(r.poche)}</td><td class="n">${eur(Math.max(0, Math.round(r.ht * tax.rate / 100)))}</td></tr>`).join('')}</tbody><tfoot><tr><td>Total</td><td class="n opt">${eur(yt.ttc)}</td>${yt.tva ? `<td class="n opt">${eur(yt.tva)}</td>` : ''}<td class="n opt">${eur(yt.urssaf)}</td><td class="n strong">${eur(yt.poche)}</td><td class="n">${eur(Math.max(0, Math.round(yt.ht * tax.rate / 100)))}</td></tr></tfoot></table></div></section>`;
+  return h;
+}
+
+function viewSaisie() {
+  const e = ui.editId ? db.encs.find(x => x.id === ui.editId) : null;
+  let h = notice() + `<section class="card"><h2>${e ? "Modifier l'encaissement" : 'Ajouter un encaissement'}</h2><form id="entry" class="entry">
+    <label class="f">Date<input name="date" type="date" required value="${e ? e.date : today()}"></label>
+    <label class="f">Montant reçu TTC (€)<input name="ttc" inputmode="decimal" required placeholder="1 200,00" value="${e ? (e.ttc / 100).toFixed(2).replace('.', ',') : ''}"></label>
+    <label class="f wide">Client ou note (facultatif)<input name="client" value="${esc(e?.client)}"></label>
+    <div class="row wide"><button class="primary">${e ? 'Enregistrer' : 'Ajouter'}</button>${e ? '<button type="button" data-act="cancel">Annuler</button>' : ''}</div></form></section>`;
+  const list = [...db.encs].sort((a, b) => b.date.localeCompare(a.date)), groups = {};
+  for (const x of list) (groups[x.date.slice(0, 7)] ||= []).push(x);
+  h += `<section class="card"><h2>Déjà saisi</h2>` + (list.length ? Object.entries(groups).map(([k, g]) => {
+    const t = total(g);
+    return `<div class="month"><span>${cap(MONTHS[+k.slice(5) - 1])} ${k.slice(0, 4)}</span><span class="muted">${eur(t.ttc)} encaissés · ${eur(t.poche)} en poche</span></div>` + g.map(x => `<div class="entry-line"><div><div>${esc(x.client) || 'Encaissement'}</div><div class="muted">${x.date.split('-').reverse().join('/')}</div></div><div class="row" style="justify-content:flex-end"><span class="amt">${eur(x.ttc)}</span><button class="link" data-act="edit" data-id="${x.id}">Modifier</button><button class="link" data-act="del" data-id="${x.id}">Supprimer</button></div></div>`).join('');
+  }).join('') : `<p class="muted" style="margin:0">Rien pour l'instant. Ton premier encaissement apparaîtra ici.</p>`) + `</section>`;
+  return h;
+}
+
+const FIELDS = [
+  ['parts', 'Nombre de parts', 'Indiqué sur ton avis d\'imposition', 'n'],
+  ['autres', 'Autres revenus imposables du foyer', 'Salaires, conjoint, loyers… par an', 'e'],
+  ['deductions', 'Déductions', 'PER, pensions alimentaires… par an', 'e'],
+  ['reductions', 'Réductions et crédits d\'impôt', 'Dons, garde d\'enfants, emploi à domicile…', 'e'],
+  ['acomptes', 'Acomptes déjà payés sur cette activité', 'Voir ton espace impots.gouv.fr', 'e'],
+];
+const frNum = n => String(n).replace('.', ',');
+function viewFiscal() {
+  const y = ui.y, f = fiscal(y), t = taxFor(y), edit = ui.fiscalEdit || !f.saved;
+  let h = notice() + (t.vl ? '<div class="banner" style="background:#eceefe;color:#2c2f9e">Versement libératoire activé dans les paramètres : rien à garder en plus pour cette activité.</div>' : '') + `<div class="nav"><button data-act="prevYear" aria-label="Année précédente">‹</button><strong>Revenus ${y}</strong><button data-act="nextYear" aria-label="Année suivante">›</button></div>`;
+  h += `<section class="card"><div class="label">Reste à garder pour les impôts sur ton activité</div><div class="big">${eur(Math.round(t.reste) * 100)}</div><div class="lines"><div><span>CA HT ${t.projected ? 'projeté à ce rythme' : 'encaissé'}</span><span>${eur(Math.round(t.ca) * 100)}</span></div><div><span>Revenu imposable après ${db.settings.abattement} % d'abattement</span><span>${eur(Math.round(t.imposable) * 100)}</span></div><div><span>Impôt estimé du foyer</span><span>${eur(Math.round(t.foyer) * 100)}</span></div><div><span>Dont lié à ton activité</span><span>${eur(Math.round(t.activite) * 100)}</span></div><div><span>Acomptes déjà payés</span><span>− ${eur(Math.round(t.acomptes) * 100)}</span></div></div>${t.perso ? `<p class="muted" style="margin:10px 0 0">Sur la page Ma poche, ton taux choisi de ${pctTxt(f.taux)} remplace ce calcul.</p>` : ''}</section>`;
+  if (edit) {
+    h += `<section class="card"><h2>Ma situation ${y}</h2><form id="fiscal" class="settings">
+      <label class="f">Situation<select name="couple"><option value="0" ${f.couple ? '' : 'selected'}>Seul(e)</option><option value="1" ${f.couple ? 'selected' : ''}>Marié(e) ou pacsé(e), déclaration commune</option></select></label>
+      ${FIELDS.map(([k, l, hint, type]) => `<label class="f">${l}${type === 'e' ? ' (€)' : ''}<input name="${k}" inputmode="decimal" required value="${frNum(f[k])}"><span class="muted">${hint}</span></label>`).join('')}
+      <label class="f">Taux d'impôt choisi (%)<input name="taux" inputmode="decimal" placeholder="Automatique" value="${f.taux === null ? '' : frNum(f.taux)}"><span class="muted">Facultatif, remplace l'estimation</span></label>
+      <div class="row" style="grid-column:1/-1"><button class="primary">Enregistrer</button>${f.saved ? '<button type="button" data-act="fiscalCancel">Annuler</button>' : ''}</div></form></section>`;
+  } else {
+    h += `<section class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">Ma situation ${y}</h2><button data-act="fiscalEdit">Modifier</button></div><div class="saved"><div><span>Situation</span><b>${f.couple ? 'Marié(e) ou pacsé(e)' : 'Seul(e)'}</b></div>${FIELDS.map(([k, l, , type]) => `<div><span>${l}</span><b>${type === 'e' ? eur(Math.round(f[k] * 100)) : frNum(f[k])}</b></div>`).join('')}<div><span>Taux d'impôt choisi</span><b>${f.taux === null ? 'Automatique' : pctTxt(f.taux)}</b></div></div></section>`;
+  }
+  h += `<p class="muted">Estimation avec le barème et l'abattement des paramètres, qui peuvent changer pour tes revenus ${y}. Elle ignore le plafonnement du quotient familial et la contribution sur les hauts revenus. Le montant exact sera sur ton avis d'imposition : compare avec le simulateur d'impots.gouv.fr.</p>`;
+  return h;
+}
+
+const BUDGET_START = ['Loyer', 'Nourriture', 'Abonnements', 'Transports', 'Assurances', 'Loisirs'];
+const budgetTotal = () => (db.budget || []).reduce((a, x) => a + x.amount, 0);
+const reservedFor = (t, rate) => Math.max(0, Math.round(t.ht * rate / 100));
+function readBudgetForm() {
+  return [...document.querySelectorAll('#budget .budget-row')].map(r => ({ label: r.querySelector('[name=label]').value, amount: r.querySelector('[name=amount]').value }));
+}
+function viewBudget() {
+  const { y, m } = ui, rate = taxFor(y).rate, charges = budgetTotal(), mt = total(inMonth(y, m)), yt = total(inYear(y));
+  const span = monthSpan(y), months = span.count, enough = span.filled >= MIN_MONTHS;
+  const monthTax = reservedFor(mt, rate), left = mt.poche - monthTax - charges;
+  const avgFree = months ? (yt.poche - reservedFor(yt, rate)) / months : 0, avgLeft = avgFree - charges;
+  const verdict = c => c >= 0 ? eur(c) : `− ${eur(-c)}`;
+  let h = notice() + `<section class="card month-card"><div class="nav"><button data-act="prev" aria-label="Mois précédent">‹</button><strong>${cap(MONTHS[m - 1])} ${y}</strong><button data-act="next" aria-label="Mois suivant">›</button></div><div class="label">${!mt.ttc ? 'Aucun encaissement saisi ce mois-ci' : left >= 0 ? 'Je peux mettre de côté ce mois-ci' : 'Il me manque ce mois-ci'}</div><div class="big">${mt.ttc ? eur(Math.abs(left)) : '–'}</div><div class="lines"><div><span>Dans ma poche</span><span>${eur(mt.poche)}</span></div><div><span>À garder pour les impôts</span><span>− ${eur(monthTax)}</span></div><div><span>Mes charges</span><span>− ${eur(charges)}</span></div></div>${charges ? '' : '<p class="muted" style="margin:10px 0 0">Tes charges ne sont pas encore renseignées : ce montant est surestimé.</p>'}</section>`;
+  const dots = Array.from({ length: MIN_MONTHS }, (_, i) => `<i class="${i < span.filled ? 'on' : ''}"></i>`).join('');
+  h += `<h2 class="year-title">En moyenne en ${y}</h2><section class="card">` + (enough
+    ? `<div class="label">Je peux mettre de côté par mois</div><div class="mid">${verdict(Math.round(avgLeft))}</div><p class="muted" style="margin:8px 0 0">Calculé sur ${months} mois, ${/^[ao]/.test(MONTHS[span.first - 1]) ? "d'" : 'de '}${MONTHS[span.first - 1]} à ${MONTHS[span.last - 1]}, mois sans revenu compris : ${eur(Math.round(avgFree))} disponibles par mois après impôts, moins ${eur(charges)} de charges.</p>`
+    : `<div class="label">Pas encore assez de données</div><div class="dots" aria-hidden="true">${dots}</div><p class="muted" style="margin:8px 0 0">${span.filled} mois saisi${span.filled > 1 ? 's' : ''} sur ${MIN_MONTHS}. La moyenne s'affichera à partir de ${MIN_MONTHS} mois. <button class="link" data-act="tab" data-v="saisie">Ajouter un encaissement</button></p>`) + `</section>`;
+  const edit = ui.budgetDraft;
+  if (edit) {
+    h += `<section class="card"><h2>Mes charges par mois</h2><form id="budget">${edit.map((x, i) => `<div class="budget-row"><input name="label" aria-label="Nom de la charge" placeholder="Nom" value="${esc(x.label)}"><input name="amount" aria-label="Montant par mois" inputmode="decimal" placeholder="0,00" value="${esc(x.amount)}"><button type="button" class="link" data-act="budgetDel" data-v="${i}">Retirer</button></div>`).join('')}<div class="row" style="margin-top:12px"><button type="button" data-act="budgetAdd">+ Ajouter une ligne</button><button class="primary">Enregistrer</button>${db.budget ? '<button type="button" data-act="budgetCancel">Annuler</button>' : ''}</div></form></section>`;
+  } else {
+    h += `<section class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">Mes charges par mois</h2><button data-act="budgetEdit">Modifier</button></div>${db.budget?.length ? `<div class="saved">${db.budget.map(x => `<div><span>${esc(x.label)}</span><b>${eur(x.amount)}</b></div>`).join('')}<div><span>Total</span><b>${eur(charges)}</b></div></div>` : '<p class="muted" style="margin:0">Aucune charge pour l\'instant.</p>'}</section>`;
+  }
+  return h;
+}
+
+function viewParams() {
+  const s = db.settings, num = n => String(n).replace('.', ',');
+  const rows = s.bareme.map(([top, r], i) => `<div class="tax-row"><span>${i === s.bareme.length - 1 ? `Au-delà de ${(s.bareme[i - 1][0]).toLocaleString('fr-FR')} €` : `Jusqu'à`}</span>${top === null ? '<span></span>' : `<input name="top${i}" inputmode="numeric" aria-label="Plafond de la tranche ${i + 1}" value="${top}">`}<input name="rate${i}" inputmode="decimal" aria-label="Taux de la tranche ${i + 1} en %" value="${num(r)}"><span>%</span></div>`).join('');
+  return `<div class="head-simple"><h1>Paramètres</h1></div>` + notice() + `<form id="params">
+  <section class="card"><h2>Mon activité</h2><div class="settings">
+    <label class="f full">Type d'activité en micro-entreprise<select name="activite" id="activite">${Object.entries(ACTIVITES).map(([k, a]) => `<option value="${k}" ${s.activite === k ? 'selected' : ''}>${a.label}</option>`).join('')}</select></label>
+    <label class="f">URSSAF sur le HT, CFP incluse (%)<input name="urssafRate" inputmode="decimal" value="${num(s.urssafRate)}"></label>
+    <label class="f">Abattement fiscal (%)<input name="abattement" inputmode="decimal" value="${num(s.abattement)}"></label>
+    <label class="c full"><input type="checkbox" id="vl" name="vl" ${s.vl ? 'checked' : ''}><span>J'ai le versement libératoire : l'impôt est inclus dans le taux URSSAF</span></label>
+    <p class="muted full" style="margin:0">Choisir une activité remplit ces taux avec les valeurs 2026. Si tu as l'ACRE ou un autre taux, modifie le champ URSSAF.</p>
+  </div></section>
+  <section class="card"><h2>TVA</h2><div class="settings">
+    <label class="c full"><input type="checkbox" id="tvaOn" name="tvaOn" ${s.tvaOn ? 'checked' : ''}><span>Je facture la TVA</span></label>
+    <label class="f" id="tvaRateField" ${s.tvaOn ? '' : 'hidden'}>Taux de TVA (%)<input name="tvaRate" inputmode="decimal" value="${num(s.tvaRate)}"></label>
+  </div></section>
+  <section class="card"><h2>Barème de l'impôt, pour une part</h2>${rows}
+    <div class="settings" style="margin-top:12px"><label class="f">Décote, personne seule (€)<input name="decoteSeul" inputmode="numeric" value="${s.decoteSeul}"></label><label class="f">Décote, couple (€)<input name="decoteCouple" inputmode="numeric" value="${s.decoteCouple}"></label></div>
+    <p class="muted">Valeurs 2026 par défaut, à vérifier chaque année sur impots.gouv.fr. <button type="button" class="link" data-act="resetBareme">Revenir au barème 2026</button></p></section>
+  <div class="row" style="margin-bottom:14px"><button class="primary">Enregistrer</button><span class="muted">Les nouveaux taux de TVA et d'URSSAF valent pour les prochains encaissements. Ceux déjà saisis gardent leurs taux. L'impôt est recalculé partout.</span></div></form>
+  <section class="card"><h2>Sauvegarde</h2><p class="muted">Tes données restent dans ce navigateur, sur cet appareil. Garde une copie à l'abri, par exemple une fois par mois.</p><div class="row"><button data-act="backup" type="button">Télécharger une sauvegarde</button><label class="btn">Restaurer<input id="restore" type="file" accept=".json,application/json" hidden></label></div></section>`;
+}
+
+const actions = {
+  resetBareme: () => { const f = $('#params'); BAREME_2026.forEach(([top, r], i) => { if (top !== null) f[`top${i}`].value = top; f[`rate${i}`].value = String(r); }); f.decoteSeul.value = 897; f.decoteCouple.value = 1483; return false; },
+  budgetEdit: () => ui.budgetDraft = (db.budget?.length ? db.budget : BUDGET_START.map(label => ({ label, amount: 0 }))).map(x => ({ label: x.label, amount: x.amount ? (x.amount / 100).toFixed(2).replace('.', ',') : '' })),
+  budgetCancel: () => ui.budgetDraft = null,
+  budgetAdd: () => ui.budgetDraft = [...readBudgetForm(), { label: '', amount: '' }],
+  budgetDel: t => { const d = readBudgetForm(); d.splice(+t.dataset.v, 1); ui.budgetDraft = d; },
+  prevYear: () => { ui.y--; ui.fiscalEdit = false; },
+  nextYear: () => { ui.y++; ui.fiscalEdit = false; },
+  fiscalEdit: () => ui.fiscalEdit = true,
+  fiscalCancel: () => ui.fiscalEdit = false,
+  tab: t => { ui.tab = t.dataset.v; ui.editId = null; ui.fiscalEdit = false; ui.budgetDraft = t.dataset.v === 'budget' && !db.budget ? BUDGET_START.map(label => ({ label, amount: '' })) : null; },
+  prev: () => { if (--ui.m < 1) { ui.m = 12; ui.y--; } },
+  next: () => { if (++ui.m > 12) { ui.m = 1; ui.y++; } },
+  pick: t => ui.m = +t.dataset.v,
+  edit: t => { ui.editId = t.dataset.id; scrollTo(0, 0); },
+  cancel: () => ui.editId = null,
+  del: t => { const e = db.encs.find(x => x.id === t.dataset.id); if (confirm(`Supprimer l'encaissement de ${eur(e.ttc)} ?`)) { db.encs = db.encs.filter(x => x !== e); save(); } },
+  backup: () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' })); a.download = `ma-poche-${today()}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); },
+};
+document.addEventListener('click', ev => { const t = ev.target.closest('[data-act]'); if (t) { if (actions[t.dataset.act](t) !== false) render(); } });
+document.addEventListener('keydown', ev => { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches?.('tr[data-act]')) { ev.preventDefault(); ev.target.click(); } });
+document.addEventListener('change', ev => {
+  const c = ev.target;
+  if (c.id === 'tvaOn') { $('#tvaRateField').hidden = !c.checked; return; }
+  if (c.id === 'activite' || c.id === 'vl') { const f = c.form, a = ACTIVITES[f.activite.value]; f.urssafRate.value = String(+(a.urssaf + (f.vl.checked ? a.vl : 0)).toFixed(1)).replace('.', ','); f.abattement.value = a.abattement; return; }
+  if (ev.target.id !== 'restore' || !ev.target.files[0]) return;
+  ev.target.files[0].text().then(txt => {
+    try {
+      const d = JSON.parse(txt);
+      if (!Array.isArray(d.encs)) throw 0;
+      if (confirm(`Remplacer tes données par cette sauvegarde (${d.encs.length} encaissements) ?`)) { db = { ...d, settings: { ...DEFAULTS, ...d.settings } }; save(); ui.notice = { kind: 'good', text: 'Sauvegarde restaurée.' }; }
+    } catch (e) { ui.notice = { kind: 'bad', text: "Ce fichier n'est pas une sauvegarde valide." }; }
+    render();
+  });
+});
+document.addEventListener('submit', ev => {
+  ev.preventDefault();
+  const f = ev.target, v = Object.fromEntries(new FormData(f));
+  if (f.id === 'entry') {
+    const ttc = parseMoney(v.ttc);
+    if (!ttc || !/^\d{4}-\d{2}-\d{2}$/.test(v.date)) { ui.notice = { kind: 'bad', text: 'Vérifie la date et le montant.' }; return render(); }
+    const old = ui.editId && db.encs.find(x => x.id === ui.editId);
+    const e = old ? Object.assign(old, { date: v.date, ttc, client: v.client.trim() }) : { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), date: v.date, ttc, client: v.client.trim(), rates: { tva: db.settings.tvaOn ? db.settings.tvaRate : 0, urssaf: db.settings.urssafRate } };
+    if (!old) db.encs.push(e);
+    save(); ui.editId = null; ui.y = +v.date.slice(0, 4); ui.m = +v.date.slice(5, 7);
+    const c = calc(e);
+    ui.notice = { kind: 'good', text: `${old ? 'Modifié' : 'Ajouté'} : ${eur(c.poche)} dans ta poche, après ${c.tva ? `${eur(c.tva)} de TVA et ` : ''}${eur(c.urssaf)} d'URSSAF.` };
+  } else if (f.id === 'params') {
+    const pct = x => { const n = parseNum(x); return n !== null && n >= 0 && n < 100 ? n : null; };
+    const old = db.settings.bareme, bareme = old.map(([top], i) => [top === null ? null : parseNum(v[`top${i}`]), pct(v[`rate${i}`])]);
+    const asc = bareme.slice(0, -1).every(([t, r], i, a) => t > 0 && r !== null && (!i || t > a[i - 1][0])) && bareme[bareme.length - 1][1] !== null;
+    const r = { urssafRate: pct(v.urssafRate), abattement: pct(v.abattement), tvaRate: v.tvaOn ? pct(v.tvaRate) : db.settings.tvaRate, decoteSeul: parseNum(v.decoteSeul), decoteCouple: parseNum(v.decoteCouple) };
+    if (Object.values(r).includes(null) || r.decoteSeul < 0 || r.decoteCouple < 0 || !asc) ui.notice = { kind: 'bad', text: 'Un paramètre est invalide. Vérifie les taux et que les tranches du barème vont en augmentant.' };
+    else { Object.assign(db.settings, r, { bareme, activite: v.activite, vl: !!v.vl, tvaOn: !!v.tvaOn, configured: true }); save(); ui.notice = { kind: 'good', text: 'Paramètres enregistrés.' }; }
+  } else if (f.id === 'budget') {
+    const rows = readBudgetForm().filter(x => x.label.trim() || String(x.amount).trim());
+    const clean = rows.map(x => ({ label: x.label.trim(), amount: String(x.amount).trim() ? parseMoney(x.amount) : 0 }));
+    if (clean.some(x => !x.label || x.amount === null || x.amount < 0)) ui.notice = { kind: 'bad', text: 'Chaque ligne a besoin d\'un nom et d\'un montant positif.' };
+    else { db.budget = clean; save(); ui.budgetDraft = null; ui.notice = { kind: 'good', text: 'Charges enregistrées.' }; }
+  } else if (f.id === 'fiscal') {
+    const vals = Object.fromEntries(FIELDS.map(([k]) => [k, parseNum(v[k])])), taux = String(v.taux).trim() ? parseNum(v.taux) : null;
+    if (!(vals.parts >= 1) || FIELDS.some(([k]) => !(vals[k] >= 0)) || (String(v.taux).trim() && !(taux >= 0 && taux < 100))) ui.notice = { kind: 'bad', text: 'Vérifie les montants (au moins 1 part, pas de valeur négative).' };
+    else { (db.fiscal ||= {})[ui.y] = { ...vals, couple: v.couple === '1', taux, saved: true }; save(); ui.fiscalEdit = false; ui.notice = { kind: 'good', text: 'Situation enregistrée.' }; }
+  }
+  render();
+});
+render();
+</script>
+</body>
+</html>
