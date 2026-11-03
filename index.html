@@ -8,8 +8,8 @@
 :root {
   color-scheme: light;
   --bg: #f4f4f7; --surface: #fff; --surface-2: #eeeef2; --line: #e8e8ed;
-  --text: #0a0a0f; --text-2: #5f5f6b; --accent: #0a0a0f; --accent-ink: #fff; --brand: #4f55f1;
-  --reserve-bg: #fdf1d8; --reserve-ink: #6e4700; --good-bg: #e4f6ec; --good-ink: #14613a; --bad-bg: #fde8e6; --bad-ink: #a3241f;
+  --text: #0a0a0f; --text-2: #5f5f6b; --accent: #0a0a0f; --accent-ink: #fff; --brand: #4f55f1; --brand-soft: #eceefe; --brand-ink: #2c2f9e;
+  --good-bg: #e4f6ec; --good-ink: #14613a; --bad-bg: #fde8e6; --bad-ink: #a3241f;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -30,10 +30,8 @@ button:focus-visible, input:focus-visible, summary:focus-visible, tr:focus-visib
 .nav button { width: 38px; height: 38px; padding: 0; background: var(--surface); font-size: 18px; }
 .nav strong { min-width: 170px; text-align: center; font-size: 17px; }
 .label { color: var(--text-2); }
-.big { font-size: 52px; font-weight: 720; letter-spacing: -.03em; line-height: 1.12; font-variant-numeric: tabular-nums; }
+.big { font-size: 42px; font-weight: 720; letter-spacing: -.03em; line-height: 1.12; font-variant-numeric: tabular-nums; }
 .mid { font-size: 32px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; font-variant-numeric: tabular-nums; }
-.reserve { background: var(--reserve-bg); color: var(--reserve-ink); border-radius: 14px; padding: 11px 14px; margin-top: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.reserve b { font-variant-numeric: tabular-nums; }
 .lines { margin-top: 14px; font-size: 14px; color: var(--text-2); }
 .lines div { display: flex; justify-content: space-between; padding: 3px 0; font-variant-numeric: tabular-nums; }
 .muted { color: var(--text-2); font-size: 13.5px; }
@@ -46,7 +44,7 @@ th { color: var(--text-2); font-weight: 500; }
 tfoot td { font-weight: 680; border-bottom: 0; }
 tbody tr[data-act] { cursor: pointer; }
 tbody tr[data-act]:hover { background: var(--bg); }
-tr.sel { background: #eceefe; }
+tr.sel { background: var(--brand-soft); }
 .strong { font-weight: 680; }
 form.entry { display: grid; grid-template-columns: 160px 1fr 1.4fr auto; gap: 10px; align-items: end; }
 label.f { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; color: var(--text-2); }
@@ -62,8 +60,10 @@ input { font: inherit; color: var(--text); background: var(--bg); border: 1px so
 .month-card .nav { justify-content: space-between; margin-bottom: 18px; }
 .month-card .nav button { background: rgba(255,255,255,.14); color: #fff; }
 .month-card .label, .month-card .lines, .month-card .muted, .month-card button.link { color: #c9c9d6; }
-.month-card .reserve { background: #f6c453; color: #2c1f00; }
 .year-title { margin: 24px 0 10px; font-size: 18px; }
+.year-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.year-head strong { font-size: 17px; }
+.year-head .cashed { margin: 0; }
 .budget-row { display: grid; grid-template-columns: 1fr 130px auto; gap: 8px; align-items: center; margin-bottom: 8px; }
 .dots { display: flex; gap: 6px; margin-top: 10px; }
 .dots i { width: 28px; height: 6px; border-radius: 3px; background: var(--surface-2); }
@@ -72,6 +72,7 @@ input { font: inherit; color: var(--text); background: var(--bg); border: 1px so
 label.c { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
 input[type=checkbox] { width: auto; margin-top: 3px; }
 .head-simple h1 { font-size: 22px; margin: 0 0 14px; }
+.month-card .lines .result { color: #fff; font-weight: 650; border-top: 1px solid rgba(255,255,255,.14); margin-top: 4px; padding-top: 8px; }
 .tax-row { display: grid; grid-template-columns: 1fr 120px 80px 16px; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 14px; color: var(--text-2); }
 [hidden] { display: none !important; }
 .short { display: none; }
@@ -80,11 +81,33 @@ dialog::backdrop { background: rgba(10,10,15,.45); }
 dialog h2 { font-size: 19px; margin-bottom: 14px; }
 .entry-modal { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: end; }
 .entry-modal .wide { grid-column: 1 / -1; }
+.owe { margin-top: 18px; border-radius: 16px; background: var(--bg); padding: 6px 14px; }
+.owe-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.owe-row:first-child { border-top: 0; }
+.owe-txt span { display: block; font-size: 13px; color: var(--text-2); }
+.owe-txt { flex: 1; }
+.num { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--surface-2); color: var(--text-2); flex: none; }
+.nav-title { text-align: center; }
+.nav-title .cashed { margin: 2px 0 0; }
+.cashed { font-size: 13px; color: var(--text-2); margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.month-card .cashed { color: #c9c9d6; }
+.step-main { display: flex; gap: 12px; align-items: flex-start; }
+.step-main .num { margin-top: 3px; background: var(--brand); color: #fff; }
+.owe-row.declare > b { color: var(--brand); }
+.owe-row.declare .owe-txt b::after { content: ' · info'; font-weight: 500; color: var(--text-2); font-size: 12px; }
+.month-card .num { background: rgba(255,255,255,.14); color: #fff; }
+.month-card .step-main .num { background: #fff; color: #15151f; }
+.month-card .owe-row.declare > b { color: #9fb2ff; }
+.month-card .owe { background: rgba(255,255,255,.08); }
+.month-card .owe-txt span { color: #c9c9d6; }
+.month-card .owe-row { border-color: rgba(255,255,255,.14); }
 .add-row { display: flex; justify-content: flex-end; margin-top: 14px; }
 .add-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.35); font-size: 14px; padding: 7px 14px; }
 .add-btn:hover { background: rgba(255,255,255,.12); }
 .banner { border-radius: 14px; padding: 11px 14px; margin-bottom: 14px; }
 .good { background: var(--good-bg); color: var(--good-ink); }
+.info { background: var(--brand-soft); color: var(--brand-ink); }
+.info button.link { color: inherit; }
 .bad { background: var(--bad-bg); color: var(--bad-ink); }
 .month { display: flex; justify-content: space-between; gap: 10px; font-weight: 650; padding: 16px 0 6px; flex-wrap: wrap; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -95,7 +118,7 @@ details[open] summary { margin-bottom: 14px; }
 @media (max-width: 640px) {
   .wrap { padding: 12px 16px 56px; }
   .card { padding: 18px; }
-  .big { font-size: 42px; }
+  .big { font-size: 36px; }
   form.entry { grid-template-columns: 1fr 1fr; }
   form.entry .wide { grid-column: 1 / -1; }
   th.opt, td.opt { display: none; }
@@ -199,20 +222,21 @@ function fiscal(y) {
   const all = db.fiscal || {}, s = db.settings;
   if (all[y]) return all[y];
   const prev = Object.keys(all).filter(k => +k < y).sort().pop();
-  if (prev) return { ...all[prev], acomptes: 0, saved: false };
-  return { couple: s.parts >= 2, parts: s.parts, autres: s.autresRevenus, deductions: 0, reductions: 0, acomptes: 0, taux: s.impotPerso, saved: false };
+  if (prev) return { ...all[prev], acomptes: 0, caHT: null, saved: false };
+  return { couple: s.parts >= 2, parts: s.parts, autres: s.autresRevenus, deductions: 0, reductions: 0, acomptes: 0, taux: s.impotPerso, caHT: null, saved: false };
 }
 // Année en cours : CA projeté à partir du dernier mois saisi. Micro-BNC : 34 % d'abattement, 305 € minimum.
 function taxFor(y) {
   const f = fiscal(y), ht = total(inYear(y)).ht / 100;
   const span = monthSpan(y), lastMonth = span.last;
-  const projected = y === now.getFullYear() && lastMonth > 0 && lastMonth < 12;
+  // Un CA HT saisi à la main (année passée, sans encaissements dans l'outil) remplace les saisies pour l'impôt.
+  const manual = f.caHT != null, projected = !manual && y === now.getFullYear() && lastMonth > 0 && lastMonth < 12;
   // Les mois restants suivent la moyenne depuis le premier mois saisi. Les mois d'avant ne sont pas supposés à zéro dans la moyenne.
-  const ca = Math.max(0, projected ? ht + ht / span.count * (12 - lastMonth) : ht), imposable = Math.max(0, ca - Math.max(ca * db.settings.abattement / 100, 305));
+  const ca = manual ? f.caHT : Math.max(0, projected ? ht + ht / span.count * (12 - lastMonth) : ht), imposable = Math.max(0, ca - Math.max(ca * db.settings.abattement / 100, 305));
   const net = rev => Math.max(0, incomeTax(Math.max(0, rev - f.deductions), f.parts, f.couple) - f.reductions);
   const foyer = net(f.autres + imposable), activite = foyer - net(f.autres), reste = Math.max(0, activite - f.acomptes);
   const vl = db.settings.vl;
-  return { ca, imposable, foyer, activite, reste: vl ? 0 : reste, acomptes: f.acomptes, rate: vl ? 0 : f.taux !== null ? f.taux : ca > 0 ? reste / ca * 100 : 0, projected, perso: !vl && f.taux !== null, saved: f.saved, vl };
+  return { ca, imposable, foyer, activite, reste: vl ? 0 : reste, acomptes: f.acomptes, rate: vl ? 0 : f.taux !== null ? f.taux : ca > 0 ? reste / ca * 100 : 0, projected, perso: !vl && f.taux !== null, saved: f.saved, vl, manual };
 }
 
 function render() {
@@ -225,23 +249,45 @@ function render() {
   if (modal) { const d = $('#addDlg'); d.addEventListener('cancel', () => { ui.add = null; setTimeout(render); }); d.showModal(); }
 }
 function notice() { if (!ui.notice) return ''; const n = ui.notice; ui.notice = null; return `<div class="banner ${n.kind}" role="status">${esc(n.text)}</div>`; }
-function lines(t) { return `<div class="lines"><div><span>Encaissé TTC</span><span>${eur(t.ttc)}</span></div>${t.tva ? `<div><span>TVA</span><span>− ${eur(t.tva)}</span></div>` : ''}<div><span>${db.settings.vl ? 'URSSAF et impôt' : 'URSSAF'}</span><span>− ${eur(t.urssaf)}</span></div></div>`; }
-function reserve(t, rate) { if (db.settings.vl) return ''; const r = Math.max(0, Math.round(t.ht * rate / 100)); return `<div class="reserve"><span>Dont à garder pour les impôts</span><b>${eur(r)}</b></div>`; }
-
+// Lecture en étapes : pour moi, URSSAF, CA HT à déclarer, TVA, impôts. Les montants mis de côté additionnés font l'encaissé TTC.
+function split(t, rate) {
+  const vl = db.settings.vl, impot = vl ? 0 : Math.max(0, Math.round(t.ht * rate / 100));
+  return { ...t, impot, moi: t.poche - impot, vl };
+}
+function steps(t, size) {
+  const rows = [
+    [`Pour l'URSSAF`, t.vl ? 'Cotisations et impôt, à mettre de côté' : 'Cotisations, à mettre de côté', t.urssaf],
+    [`À déclarer à l'URSSAF`, `Chiffre d'affaires hors TVA`, t.ht, 'declare'],
+    ...(t.tva ? [['Pour la TVA', 'À mettre de côté, reversée aux impôts', t.tva]] : []),
+    ...(t.vl ? [] : [['Pour les impôts', 'Estimation, à mettre de côté', t.impot]]),
+  ];
+  return `<div class="step-main"><span class="num">1</span><div><div class="label">Pour moi</div><div class="${size}">${eur(t.moi)}</div></div></div>
+    <div class="owe">${rows.map(([who, what, a, kind], i) => `<div class="owe-row ${kind || ''}"><span class="num">${i + 2}</span><div class="owe-txt"><b>${who}</b><span>${what}</span></div><b>${eur(a)}</b></div>`).join('')}</div>`;
+}
+// L'année sert de vue d'ensemble : ce qui reste pour moi, plus la TVA et l'impôt, qui se règlent sur l'année.
+function yearSummary(t, y, note) {
+  const rows = [...(t.tva ? [['Pour la TVA', 'À mettre de côté', t.tva]] : []), ...(t.vl ? [] : [['Pour les impôts', 'Estimation, à mettre de côté', t.impot]])];
+  return `<div class="year-head"><strong>Toute l'année ${y}</strong><span class="cashed">Encaissé TTC : ${eur(t.ttc)}</span></div><div class="label">Pour moi</div><div class="mid">${eur(t.moi)}</div>${rows.length ? `<div class="owe">${rows.map(([who, what, a]) => `<div class="owe-row"><div class="owe-txt"><b>${who}</b><span>${what}</span></div><b>${eur(a)}</b></div>`).join('')}</div>` : ''}${note}`;
+}
 function viewPoche() {
-  const { y, m } = ui, tax = taxFor(y), mt = total(inMonth(y, m)), yt = total(inYear(y));
+  const { y, m } = ui, tax = taxFor(y), mt = split(total(inMonth(y, m)), tax.rate), yt = split(total(inYear(y)), tax.rate);
   let h = notice();
-  if (!db.settings.configured) h += `<div class="banner" style="background:#eceefe;color:#2c2f9e">Calcul par défaut : libéral BNC, TVA 20 %, URSSAF 25,8 %. <button class="link" style="color:inherit" data-act="tab" data-v="params">Adapter à ma situation</button></div>`;
-  h += `<section class="card month-card"><div class="nav"><button data-act="prev" aria-label="Mois précédent">‹</button><strong>${cap(MONTHS[m - 1])} ${y}</strong><button data-act="next" aria-label="Mois suivant">›</button></div><div class="label">Dans ma poche ce mois-ci</div><div class="big">${eur(mt.poche)}</div>${mt.ttc ? reserve(mt, tax.rate) + lines(mt) : `<p class="muted" style="margin:10px 0 0">Rien de saisi pour ce mois.</p>`}<div class="add-row"><button class="add-btn" data-act="openAdd">+ Ajouter une saisie</button></div></section>`;
-  h += `<h2 class="year-title">Toute l'année ${y}</h2><section class="card"><div class="label">Dans ma poche en ${y}</div><div class="mid">${eur(yt.poche)}</div>${yt.ttc ? reserve(yt, tax.rate) + lines(yt) : ''}${yt.ttc ? `<p class="muted" style="margin:10px 0 0">${tax.vl ? 'Versement libératoire : ton impôt est déjà compté dans les cotisations.' : tax.perso ? `Taux impôt choisi : ${pctTxt(tax.rate)}.` : `Taux impôt estimé : ${pctTxt(tax.rate)}, ${tax.projected ? `pour environ ${eur(Math.round(tax.ca) * 100)} HT sur l'année à ce rythme` : `pour ${eur(Math.round(tax.ca) * 100)} HT`}. C'est une estimation.`}${monthSpan(y).filled < MIN_MONTHS && !tax.perso ? ` Encore peu fiable avec ${monthSpan(y).filled} mois saisi${monthSpan(y).filled > 1 ? 's' : ''}.` : ''}${tax.saved ? '' : ` <button class="link" data-act="tab" data-v="fiscal">Compléter ma situation fiscale</button>`}</p>` : ''}</section>`;
-  const rows = MONTHS.map((n, i) => ({ i: i + 1, n, ...total(inMonth(y, i + 1)) })).filter(r => r.ttc);
-  if (rows.length) h += `<section class="card"><h2>Mois par mois</h2><div class="scroll"><table><thead><tr><th>${y}</th><th class="n opt">Encaissé</th>${yt.tva ? '<th class="n opt">TVA</th>' : ''}<th class="n opt">URSSAF</th><th class="n strong">Ma poche</th><th class="n">Impôts</th></tr></thead><tbody>${rows.map(r => `<tr class="${r.i === m ? 'sel' : ''}" data-act="pick" data-v="${r.i}" tabindex="0"><td>${cap(r.n)}</td><td class="n opt">${eur(r.ttc)}</td>${yt.tva ? `<td class="n opt">${eur(r.tva)}</td>` : ''}<td class="n opt">${eur(r.urssaf)}</td><td class="n strong">${eur(r.poche)}</td><td class="n">${eur(Math.max(0, Math.round(r.ht * tax.rate / 100)))}</td></tr>`).join('')}</tbody><tfoot><tr><td>Total</td><td class="n opt">${eur(yt.ttc)}</td>${yt.tva ? `<td class="n opt">${eur(yt.tva)}</td>` : ''}<td class="n opt">${eur(yt.urssaf)}</td><td class="n strong">${eur(yt.poche)}</td><td class="n">${eur(Math.max(0, Math.round(yt.ht * tax.rate / 100)))}</td></tr></tfoot></table></div></section>`;
+  if (!db.settings.configured) h += `<div class="banner info">Calcul par défaut : libéral BNC, TVA 20 %, URSSAF 25,8 %. <button class="link" data-act="tab" data-v="params">Adapter à ma situation</button></div>`;
+  h += `<section class="card month-card"><div class="nav"><button data-act="prev" aria-label="Mois précédent">‹</button><div class="nav-title"><strong>${cap(MONTHS[m - 1])} ${y}</strong>${mt.ttc ? `<div class="cashed">Encaissé TTC : ${eur(mt.ttc)}</div>` : ''}</div><button data-act="next" aria-label="Mois suivant">›</button></div>${mt.ttc ? steps(mt, 'big') : `<div class="label">Pour moi</div><div class="big">${eur(0)}</div><p class="muted" style="margin:10px 0 0">Rien de saisi pour ce mois.</p>`}<div class="add-row"><button class="add-btn" data-act="openAdd">+ Ajouter un encaissement</button></div></section>`;
+  const filled = monthSpan(y).filled;
+  const note = tax.vl ? 'Ton impôt est inclus dans les cotisations URSSAF (versement libératoire).'
+    : `Impôt estimé à ${pctTxt(tax.rate)} du CA HT${tax.perso ? ', taux choisi' : tax.projected ? `, sur environ ${eur(Math.round(tax.ca) * 100)} HT prévus` : ''}${filled < MIN_MONTHS && !tax.perso ? `, encore peu fiable (${filled} mois saisi${filled > 1 ? 's' : ''})` : ''}.${tax.saved ? '' : ` <button class="link" data-act="tab" data-v="fiscal">Compléter ma situation fiscale</button>`}`;
+  h += `<section class="card year-card">${yt.ttc ? yearSummary(yt, y, `<p class="muted" style="margin:12px 0 0">${note}</p>`) : `<div class="year-head"><strong>Toute l'année ${y}</strong></div><p class="muted" style="margin:0">Rien de saisi cette année.</p>`}</section>`;
+  const rows = MONTHS.map((n, i) => ({ i: i + 1, n, ...split(total(inMonth(y, i + 1)), tax.rate) })).filter(r => r.ttc);
+  const tv = yt.tva !== 0, im = !yt.vl;
+  const cells = r => `<td class="n strong">${eur(r.moi)}</td><td class="n opt">${eur(r.urssaf)}</td><td class="n">${eur(r.ht)}</td>${tv ? `<td class="n opt">${eur(r.tva)}</td>` : ''}${im ? `<td class="n opt">${eur(r.impot)}</td>` : ''}<td class="n opt">${eur(r.ttc)}</td>`;
+  if (rows.length) h += `<section class="card"><h2>Mois par mois</h2><div class="scroll"><table><thead><tr><th>${y}</th><th class="n strong">Pour moi</th><th class="n opt">URSSAF</th><th class="n">À déclarer</th>${tv ? '<th class="n opt">TVA</th>' : ''}${im ? '<th class="n opt">Impôts</th>' : ''}<th class="n opt">Encaissé TTC</th></tr></thead><tbody>${rows.map(r => `<tr class="${r.i === m ? 'sel' : ''}" data-act="pick" data-v="${r.i}" tabindex="0"><td>${cap(r.n)}</td>${cells(r)}</tr>`).join('')}</tbody><tfoot><tr><td>Total</td>${cells(yt)}</tr></tfoot></table></div></section>`;
   return h;
 }
 
 function viewAdd() {
   const a = ui.add, n = notice();
-  return `<dialog id="addDlg" aria-labelledby="addTitle"><h2 id="addTitle">Ajouter une saisie</h2>${n}<form id="entry" class="entry-modal">
+  return `<dialog id="addDlg" aria-labelledby="addTitle"><h2 id="addTitle">Ajouter un encaissement</h2>${n}<form id="entry" class="entry-modal">
     <label class="f">Date<input name="date" type="date" required value="${esc(a.date)}"></label>
     <label class="f">Montant reçu TTC (€)<input name="ttc" inputmode="decimal" required autofocus placeholder="1 200,00" value="${esc(a.ttc)}"></label>
     <label class="f wide">Client ou note (facultatif)<input name="client" value="${esc(a.client)}"></label>
@@ -257,8 +303,8 @@ function viewSaisie() {
   const list = [...db.encs].sort((a, b) => b.date.localeCompare(a.date)), groups = {};
   for (const x of list) (groups[x.date.slice(0, 7)] ||= []).push(x);
   h += `<section class="card"><h2>Déjà saisi</h2>` + (list.length ? Object.entries(groups).map(([k, g]) => {
-    const t = total(g);
-    return `<div class="month"><span>${cap(MONTHS[+k.slice(5) - 1])} ${k.slice(0, 4)}</span><span class="muted">${eur(t.ttc)} encaissés · ${eur(t.poche)} en poche</span></div>` + g.map(x => `<div class="entry-line"><div><div>${esc(x.client) || 'Encaissement'}</div><div class="muted">${x.date.split('-').reverse().join('/')}</div></div><div class="row" style="justify-content:flex-end"><span class="amt">${eur(x.ttc)}</span><button class="link" data-act="edit" data-id="${x.id}">Modifier</button><button class="link" data-act="del" data-id="${x.id}">Supprimer</button></div></div>`).join('');
+    const t = split(total(g), taxFor(+k.slice(0, 4)).rate);
+    return `<div class="month"><span>${cap(MONTHS[+k.slice(5) - 1])} ${k.slice(0, 4)}</span><span class="muted">${eur(t.ttc)} encaissés · ${eur(t.moi)} pour moi</span></div>` + g.map(x => `<div class="entry-line"><div><div>${esc(x.client) || 'Encaissement'}</div><div class="muted">${x.date.split('-').reverse().join('/')}</div></div><div class="row" style="justify-content:flex-end"><span class="amt">${eur(x.ttc)}</span><button class="link" data-act="edit" data-id="${x.id}">Modifier</button><button class="link" data-act="del" data-id="${x.id}">Supprimer</button></div></div>`).join('');
   }).join('') : `<p class="muted" style="margin:0">Rien pour l'instant. Ton premier encaissement apparaîtra ici.</p>`) + `</section>`;
   return h;
 }
@@ -273,16 +319,19 @@ const FIELDS = [
 const frNum = n => String(n).replace('.', ',');
 function viewFiscal() {
   const y = ui.y, f = fiscal(y), t = taxFor(y), edit = ui.fiscalEdit || !f.saved;
-  let h = notice() + (t.vl ? '<div class="banner" style="background:#eceefe;color:#2c2f9e">Versement libératoire activé dans les paramètres : rien à garder en plus pour cette activité.</div>' : '') + `<div class="nav"><button data-act="prevYear" aria-label="Année précédente">‹</button><strong>Revenus ${y}</strong><button data-act="nextYear" aria-label="Année suivante">›</button></div>`;
-  h += `<section class="card"><div class="label">Reste à garder pour les impôts sur ton activité</div><div class="big">${eur(Math.round(t.reste) * 100)}</div><div class="lines"><div><span>CA HT ${t.projected ? 'projeté à ce rythme' : 'encaissé'}</span><span>${eur(Math.round(t.ca) * 100)}</span></div><div><span>Revenu imposable après ${db.settings.abattement} % d'abattement</span><span>${eur(Math.round(t.imposable) * 100)}</span></div><div><span>Impôt estimé du foyer</span><span>${eur(Math.round(t.foyer) * 100)}</span></div><div><span>Dont lié à ton activité</span><span>${eur(Math.round(t.activite) * 100)}</span></div><div><span>Acomptes déjà payés</span><span>− ${eur(Math.round(t.acomptes) * 100)}</span></div></div>${t.perso ? `<p class="muted" style="margin:10px 0 0">Sur la page Ma poche, ton taux choisi de ${pctTxt(f.taux)} remplace ce calcul.</p>` : ''}</section>`;
+  let h = notice() + (t.vl ? '<div class="banner info">Versement libératoire activé dans les paramètres : rien à garder en plus pour cette activité.</div>' : '') + `<div class="nav"><button data-act="prevYear" aria-label="Année précédente">‹</button><div class="nav-title"><strong>Revenus ${y}</strong><div class="cashed">Impôt payé en ${y + 1}</div></div><button data-act="nextYear" aria-label="Année suivante">›</button></div>`;
+  const prev = db.fiscal?.[y - 1]?.saved || inYear(y - 1).length ? taxFor(y - 1) : null;
+  if (prev && !prev.vl) h += `<div class="banner info">En ${y}, tu paies l'impôt sur tes revenus ${y - 1} : environ ${eur(Math.round(prev.reste) * 100)}. <button class="link" data-act="prevYear">Voir ${y - 1}</button></div>`;
+  h += `<section class="card"><div class="label">Impôt sur mes revenus ${y}, à payer en ${y + 1}</div><div class="big">${eur(Math.round(t.reste) * 100)}</div><div class="lines"><div><span>CA HT ${t.manual ? 'indiqué à la main' : t.projected ? 'projeté à ce rythme' : 'encaissé'}</span><span>${eur(Math.round(t.ca) * 100)}</span></div><div><span>Revenu imposable après ${db.settings.abattement} % d'abattement</span><span>${eur(Math.round(t.imposable) * 100)}</span></div><div><span>Impôt estimé du foyer</span><span>${eur(Math.round(t.foyer) * 100)}</span></div><div><span>Dont lié à ton activité</span><span>${eur(Math.round(t.activite) * 100)}</span></div><div><span>Acomptes déjà payés</span><span>− ${eur(Math.round(t.acomptes) * 100)}</span></div></div><p class="muted" style="margin:10px 0 0">${t.manual ? `Estimation de l'impôt payé en ${y + 1} sur ces revenus.` : "C'est le montant à mettre de côté sur l'année, réparti mois par mois dans Ma poche."}</p>${t.perso ? `<p class="muted" style="margin:10px 0 0">Sur la page Ma poche, ton taux choisi de ${pctTxt(f.taux)} remplace ce calcul.</p>` : ''}</section>`;
   if (edit) {
     h += `<section class="card"><h2>Ma situation ${y}</h2><form id="fiscal" class="settings">
+      <label class="f">CA HT de l'année (€)<input name="caHT" inputmode="decimal" placeholder="Calculé depuis tes saisies" value="${f.caHT == null ? '' : frNum(f.caHT)}"><span class="muted">Facultatif : pour une année passée que tu n'as pas saisie</span></label>
       <label class="f">Situation<select name="couple"><option value="0" ${f.couple ? '' : 'selected'}>Seul(e)</option><option value="1" ${f.couple ? 'selected' : ''}>Marié(e) ou pacsé(e), déclaration commune</option></select></label>
       ${FIELDS.map(([k, l, hint, type]) => `<label class="f">${l}${type === 'e' ? ' (€)' : ''}<input name="${k}" inputmode="decimal" required value="${frNum(f[k])}"><span class="muted">${hint}</span></label>`).join('')}
       <label class="f">Taux d'impôt choisi (%)<input name="taux" inputmode="decimal" placeholder="Automatique" value="${f.taux === null ? '' : frNum(f.taux)}"><span class="muted">Facultatif, remplace l'estimation</span></label>
       <div class="row" style="grid-column:1/-1"><button class="primary">Enregistrer</button>${f.saved ? '<button type="button" data-act="fiscalCancel">Annuler</button>' : ''}</div></form></section>`;
   } else {
-    h += `<section class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">Ma situation ${y}</h2><button data-act="fiscalEdit">Modifier</button></div><div class="saved"><div><span>Situation</span><b>${f.couple ? 'Marié(e) ou pacsé(e)' : 'Seul(e)'}</b></div>${FIELDS.map(([k, l, , type]) => `<div><span>${l}</span><b>${type === 'e' ? eur(Math.round(f[k] * 100)) : frNum(f[k])}</b></div>`).join('')}<div><span>Taux d'impôt choisi</span><b>${f.taux === null ? 'Automatique' : pctTxt(f.taux)}</b></div></div></section>`;
+    h += `<section class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">Ma situation ${y}</h2><button data-act="fiscalEdit">Modifier</button></div><div class="saved"><div><span>CA HT de l'année</span><b>${f.caHT == null ? 'Depuis mes saisies' : eur(Math.round(f.caHT * 100))}</b></div><div><span>Situation</span><b>${f.couple ? 'Marié(e) ou pacsé(e)' : 'Seul(e)'}</b></div>${FIELDS.map(([k, l, , type]) => `<div><span>${l}</span><b>${type === 'e' ? eur(Math.round(f[k] * 100)) : frNum(f[k])}</b></div>`).join('')}<div><span>Taux d'impôt choisi</span><b>${f.taux === null ? 'Automatique' : pctTxt(f.taux)}</b></div></div></section>`;
   }
   h += `<p class="muted">Estimation avec le barème et l'abattement des paramètres, qui peuvent changer pour tes revenus ${y}. Elle ignore le plafonnement du quotient familial et la contribution sur les hauts revenus. Le montant exact sera sur ton avis d'imposition : compare avec le simulateur d'impots.gouv.fr.</p>`;
   return h;
@@ -290,7 +339,6 @@ function viewFiscal() {
 
 const BUDGET_START = ['Logement', 'Abonnements', 'Assurance'];
 const budgetTotal = () => (db.budget || []).reduce((a, x) => a + x.amount, 0);
-const reservedFor = (t, rate) => Math.max(0, Math.round(t.ht * rate / 100));
 function readBudgetForm() {
   return [...document.querySelectorAll('#budget .budget-row')].map(r => ({ label: r.querySelector('[name=label]').value, amount: r.querySelector('[name=amount]').value }));
 }
@@ -299,15 +347,15 @@ const sumAmount = list => list.reduce((a, x) => a + x.amount, 0);
 function viewBudget() {
   const { y, m } = ui, rate = taxFor(y).rate, charges = budgetTotal(), mt = total(inMonth(y, m)), yt = total(inYear(y));
   const span = monthSpan(y), months = span.count, enough = span.filled >= MIN_MONTHS;
-  const monthTax = reservedFor(mt, rate), monthKey = `${y}-${pad(m)}`, extras = extrasOf(monthKey), extrasTotal = sumAmount(extras), left = mt.poche - monthTax - charges - extrasTotal;
-  const avgFree = months ? (yt.poche - reservedFor(yt, rate)) / months : 0, varMonths = new Set(extrasOf(String(y)).map(x => x.month)).size, avgExtras = varMonths ? sumAmount(extrasOf(String(y))) / varMonths : 0, avgLeft = avgFree - charges - avgExtras;
+  const moi = split(mt, rate).moi, monthKey = `${y}-${pad(m)}`, extras = extrasOf(monthKey), extrasTotal = sumAmount(extras), left = moi - charges - extrasTotal;
+  const avgFree = months ? split(yt, rate).moi / months : 0, varMonths = new Set(extrasOf(String(y)).map(x => x.month)).size, avgExtras = varMonths ? sumAmount(extrasOf(String(y))) / varMonths : 0, avgLeft = avgFree - charges - avgExtras;
   const verdict = c => c >= 0 ? eur(c) : `− ${eur(-c)}`;
-  let h = notice() + `<section class="card month-card"><div class="nav"><button data-act="prev" aria-label="Mois précédent">‹</button><strong>${cap(MONTHS[m - 1])} ${y}</strong><button data-act="next" aria-label="Mois suivant">›</button></div><div class="label">${!mt.ttc ? 'Aucun encaissement saisi ce mois-ci' : left >= 0 ? 'Je peux mettre de côté ce mois-ci' : 'Il me manque ce mois-ci'}</div><div class="big">${mt.ttc ? eur(Math.abs(left)) : '–'}</div><div class="lines"><div><span>Dans ma poche</span><span>${eur(mt.poche)}</span></div><div><span>À garder pour les impôts</span><span>− ${eur(monthTax)}</span></div><div><span>Charges fixes</span><span>− ${eur(charges)}</span></div>${extrasTotal ? `<div><span>Dépenses variables</span><span>− ${eur(extrasTotal)}</span></div>` : ''}</div>${mt.ttc && !extrasTotal ? '<p class="muted" style="margin:10px 0 0">Aucune dépense variable saisie ce mois-ci : ce montant baissera quand tu les ajouteras.</p>' : ''}${charges ? '' : '<p class="muted" style="margin:10px 0 0">Tes charges fixes ne sont pas encore renseignées : ce montant est surestimé.</p>'}</section>`;
+  let h = notice() + `<section class="card month-card"><div class="nav"><button data-act="prev" aria-label="Mois précédent">‹</button><strong>${cap(MONTHS[m - 1])} ${y}</strong><button data-act="next" aria-label="Mois suivant">›</button></div><div class="label">${!mt.ttc ? 'Aucun encaissement saisi ce mois-ci' : left >= 0 ? 'Je peux épargner ce mois-ci' : 'Il me manque ce mois-ci'}</div><div class="big">${mt.ttc ? eur(Math.abs(left)) : '–'}</div><div class="lines"><div><span>Pour moi</span><span>${eur(moi)}</span></div><div><span>Charges fixes</span><span>− ${eur(charges)}</span></div>${extrasTotal ? `<div><span>Dépenses variables</span><span>− ${eur(extrasTotal)}</span></div>` : ''}</div>${mt.ttc && !extrasTotal ? '<p class="muted" style="margin:10px 0 0">Aucune dépense variable saisie ce mois-ci : ce montant baissera quand tu les ajouteras.</p>' : ''}${charges ? '' : '<p class="muted" style="margin:10px 0 0">Tes charges fixes ne sont pas encore renseignées : ce montant est surestimé.</p>'}</section>`;
   h += `<section class="card"><h2>Dépenses variables de ${MONTHS[m - 1]} ${y}</h2><p class="muted" style="margin:0 0 10px">Tout ce qui n'est pas une charge fixe, en un seul montant.</p><form id="extra" class="row"><input name="amount" style="flex:1;min-width:120px" aria-label="Dépenses variables du mois" inputmode="decimal" placeholder="0,00" value="${extrasTotal ? (extrasTotal / 100).toFixed(2).replace('.', ',') : ''}"><button>Enregistrer</button></form></section>`;
   const dots = Array.from({ length: MIN_MONTHS }, (_, i) => `<i class="${i < span.filled ? 'on' : ''}"></i>`).join('');
   h += `<h2 class="year-title">En moyenne en ${y}</h2><section class="card">` + (enough
-    ? `<div class="label">Je peux mettre de côté par mois</div><div class="mid">${verdict(Math.round(avgLeft))}</div><p class="muted" style="margin:8px 0 0">Calculé sur ${months} mois, ${/^[ao]/.test(MONTHS[span.first - 1]) ? "d'" : 'de '}${MONTHS[span.first - 1]} à ${MONTHS[span.last - 1]}, mois sans revenu compris : ${eur(Math.round(avgFree))} disponibles par mois après impôts, moins ${eur(charges)} de charges fixes${avgExtras ? ` et ${eur(Math.round(avgExtras))} de dépenses variables (moyenne sur ${varMonths} mois renseigné${varMonths > 1 ? 's' : ''})` : ', sans dépense variable saisie'}.</p>`
-    : `<div class="label">Pas encore assez de données</div><div class="dots" aria-hidden="true">${dots}</div><p class="muted" style="margin:8px 0 0">${span.filled} mois saisi${span.filled > 1 ? 's' : ''} sur ${MIN_MONTHS}. La moyenne s'affichera à partir de ${MIN_MONTHS} mois. <button class="link" data-act="tab" data-v="saisie">Ajouter un encaissement</button></p>`) + `</section>`;
+    ? `<div class="label">Je peux épargner par mois</div><div class="mid">${verdict(Math.round(avgLeft))}</div><p class="muted" style="margin:8px 0 0">Calculé sur ${months} mois, ${/^[ao]/.test(MONTHS[span.first - 1]) ? "d'" : 'de '}${MONTHS[span.first - 1]} à ${MONTHS[span.last - 1]}, mois sans revenu compris : ${eur(Math.round(avgFree))} pour moi par mois, moins ${eur(charges)} de charges fixes${avgExtras ? ` et ${eur(Math.round(avgExtras))} de dépenses variables (moyenne sur ${varMonths} mois renseigné${varMonths > 1 ? 's' : ''})` : ', sans dépense variable saisie'}.</p>`
+    : `<div class="label">Pas encore assez de données</div><div class="dots" aria-hidden="true">${dots}</div><p class="muted" style="margin:8px 0 0">${span.filled} mois saisi${span.filled > 1 ? 's' : ''} sur ${MIN_MONTHS}. La moyenne s'affichera à partir de ${MIN_MONTHS} mois. <button class="link" data-act="openAdd">Ajouter un encaissement</button></p>`) + `</section>`;
   const edit = ui.budgetDraft;
   if (edit) {
     h += `<section class="card"><h2>Mes charges fixes par mois</h2><p class="muted" style="margin:0 0 10px">Ce qui revient chaque mois au même montant. Ce qui bouge va dans les dépenses variables.</p><form id="budget">${edit.map((x, i) => `<div class="budget-row"><input name="label" aria-label="Nom de la charge" placeholder="Nom" value="${esc(x.label)}"><input name="amount" aria-label="Montant par mois" inputmode="decimal" placeholder="0,00" value="${esc(x.amount)}"><button type="button" class="link" data-act="budgetDel" data-v="${i}">Retirer</button></div>`).join('')}<div class="row" style="margin-top:12px"><button type="button" data-act="budgetAdd">+ Ajouter une ligne</button><button class="primary">Enregistrer</button>${db.budget ? '<button type="button" data-act="budgetCancel">Annuler</button>' : ''}</div></form></section>`;
@@ -386,8 +434,8 @@ document.addEventListener('submit', ev => {
     const e = old ? Object.assign(old, { date: v.date, ttc, client: v.client.trim() }) : { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), date: v.date, ttc, client: v.client.trim(), rates: { tva: db.settings.tvaOn ? db.settings.tvaRate : 0, urssaf: db.settings.urssafRate } };
     if (!old) db.encs.push(e);
     save(); ui.editId = null; ui.add = null; ui.y = +v.date.slice(0, 4); ui.m = +v.date.slice(5, 7);
-    const c = calc(e);
-    ui.notice = { kind: 'good', text: `${old ? 'Modifié' : 'Ajouté'} : ${eur(c.poche)} dans ta poche, après ${c.tva ? `${eur(c.tva)} de TVA et ` : ''}${eur(c.urssaf)} d'URSSAF.` };
+    const c = split(calc(e), taxFor(ui.y).rate);
+    ui.notice = { kind: 'good', text: `${old ? 'Modifié' : 'Ajouté'} : ${eur(c.moi)} pour toi, une fois l'URSSAF, ${c.tva ? 'la TVA et ' : ''}les impôts mis de côté.` };
   } else if (f.id === 'params') {
     const pct = x => { const n = parseNum(x); return n !== null && n >= 0 && n < 100 ? n : null; };
     const old = db.settings.bareme, bareme = old.map(([top], i) => [top === null ? null : parseNum(v[`top${i}`]), pct(v[`rate${i}`])]);
@@ -405,9 +453,9 @@ document.addEventListener('submit', ev => {
     if (clean.some(x => !x.label || x.amount === null || x.amount < 0)) ui.notice = { kind: 'bad', text: 'Chaque ligne a besoin d\'un nom et d\'un montant positif.' };
     else { db.budget = clean; save(); ui.budgetDraft = null; ui.notice = { kind: 'good', text: 'Charges enregistrées.' }; }
   } else if (f.id === 'fiscal') {
-    const vals = Object.fromEntries(FIELDS.map(([k]) => [k, parseNum(v[k])])), taux = String(v.taux).trim() ? parseNum(v.taux) : null;
-    if (!(vals.parts >= 1) || FIELDS.some(([k]) => !(vals[k] >= 0)) || (String(v.taux).trim() && !(taux >= 0 && taux < 100))) ui.notice = { kind: 'bad', text: 'Vérifie les montants (au moins 1 part, pas de valeur négative).' };
-    else { (db.fiscal ||= {})[ui.y] = { ...vals, couple: v.couple === '1', taux, saved: true }; save(); ui.fiscalEdit = false; ui.notice = { kind: 'good', text: 'Situation enregistrée.' }; }
+    const vals = Object.fromEntries(FIELDS.map(([k]) => [k, parseNum(v[k])])), taux = String(v.taux).trim() ? parseNum(v.taux) : null, caHT = String(v.caHT).trim() ? parseNum(v.caHT) : null;
+    if (!(vals.parts >= 1) || FIELDS.some(([k]) => !(vals[k] >= 0)) || (String(v.taux).trim() && (taux === null || taux < 0 || taux >= 100)) || (String(v.caHT).trim() && (caHT === null || caHT < 0))) ui.notice = { kind: 'bad', text: 'Vérifie les montants (au moins 1 part, pas de valeur négative).' };
+    else { (db.fiscal ||= {})[ui.y] = { ...vals, couple: v.couple === '1', taux, caHT, saved: true }; save(); ui.fiscalEdit = false; ui.notice = { kind: 'good', text: 'Situation enregistrée.' }; }
   }
   render();
 });
